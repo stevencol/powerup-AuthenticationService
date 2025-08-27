@@ -1,0 +1,32 @@
+buildscript {
+    ext {
+        cleanArchitectureVersion = '3.24.0'
+        springBootVersion = '3.5.4'
+        sonarVersion = '6.2.0.5505'
+        jacocoVersion = '0.8.13'
+        pitestVersion = '1.19.0-rc.1'
+        lombokVersion = '1.18.38'
+    }
+}
+
+plugins {
+    id 'co.com.bancolombia.cleanArchitecture' version "${cleanArchitectureVersion}"
+    id 'org.springframework.boot' version "${springBootVersion}" apply false
+    id 'info.solidsoft.pitest' version "${pitestVersion}" apply false
+    id 'org.sonarqube' version "${sonarVersion}"
+    id 'jacoco'
+}
+
+sonarqube {
+    properties {
+        property "sonar.projectKey", "authentication-service"
+        property "sonar.projectName", "authentication service"
+        property "sonar.projectVersion", "1.0.0"
+        property "sonar.sources", "src/main/java"
+        property "sonar.tests", "src/test/java"
+        property "sonar.java.binaries", "${project.buildDir}/classes/java/main"
+        property "sonar.host.url", "http://localhost:9000"
+        property "sonar.login", "squ_042f135530a9b5edb6bb1f3e510092e628a96776"
+    }
+}
+apply from: './main.gradle'
