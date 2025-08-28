@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.*;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
@@ -34,6 +35,7 @@ public record UserDto(Long id,
                       @Email
                       String email,
                       @PositiveOrZero
+                      @Max(value = 15000000, message = "El salario no puede superar los 15.000.000")
                       BigDecimal baseSalary
 ) {
 

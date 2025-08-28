@@ -70,10 +70,10 @@ public class UserRouter {
     )
 
     public RouterFunction<ServerResponse> routerFunction(UserHandler handler) {
-        return route(POST("/api/users").and(RequestPredicates.accept(MediaType.APPLICATION_JSON)), handler::saveUser)
-                .andRoute(GET("/api/users/{email}").and(RequestPredicates.accept(MediaType.APPLICATION_JSON)), handler::getUserEmail)
-                .andRoute(GET("/api/users").and(RequestPredicates.accept(MediaType.APPLICATION_JSON)), handler::getAllUser)
-                .andRoute(PATCH("/api/users/{id}").and(RequestPredicates.contentType(MediaType.APPLICATION_JSON)), handler::editUser)
-                .andRoute(DELETE("/api/users/{id}"), handler::deleteUser);
+        return route(POST("/users").and(RequestPredicates.accept(MediaType.APPLICATION_JSON)), handler::saveUser)
+                .andRoute(GET("/users/{email}").and(RequestPredicates.accept(MediaType.APPLICATION_JSON)), handler::getUserEmail)
+                .andRoute(GET("/users").and(RequestPredicates.accept(MediaType.APPLICATION_JSON)), handler::getAllUser)
+                .andRoute(PATCH("/users/{id}").and(RequestPredicates.contentType(MediaType.APPLICATION_JSON)), handler::editUser)
+                .andRoute(DELETE("/users/{id}"), handler::deleteUser);
     }
 }
