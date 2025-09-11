@@ -41,7 +41,13 @@ public class UserEntity {
 
     @Column("email")
     String email;
-    @Column("base_salar")
 
+    @Column("base_salary")
     BigDecimal baseSalary;
+    @Column("document_number")
+    String documentNumber;
+    @Column("password")
+    String password;
+    @Column("role_id")
+    Long rolId;
 }

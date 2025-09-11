@@ -36,7 +36,12 @@ public record UserDto(Long id,
                       String email,
                       @PositiveOrZero
                       @Max(value = 15000000, message = "El salario no puede superar los 15.000.000")
-                      BigDecimal baseSalary
+                      BigDecimal baseSalary,
+                      @JsonProperty("documentNumber")
+                      String documentNumber,
+                      @NotNull
+                      String password
+
 ) {
 
 

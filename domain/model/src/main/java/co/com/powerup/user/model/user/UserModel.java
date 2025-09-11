@@ -1,16 +1,11 @@
 package co.com.powerup.user.model.user;
 
-import lombok.Builder;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder(toBuilder = true)
@@ -26,5 +21,8 @@ public class UserModel {
     String address;
     String phoneNumber;
     String email;
+    Long rolId;
     BigDecimal baseSalary;
+    String documentNumber;
+    String password;
 }

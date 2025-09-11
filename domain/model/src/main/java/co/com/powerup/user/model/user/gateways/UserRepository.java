@@ -6,15 +6,17 @@ import reactor.core.publisher.Mono;
 
 public interface UserRepository {
 
-    Mono<UserModel> saveUser(UserModel userModel);
+    Mono<UserModel> createUser(UserModel userModel);
 
-    Mono<UserModel> getUserByEmail(String email);
+    Mono<UserModel> findUserByEmail(String email);
 
-    Mono<UserModel> getUserById(Long id);
+    Mono<UserModel> findUserById(Long id);
 
-    Mono<UserModel> editUser(UserModel userModel);
+    Mono<UserModel> updateUser(UserModel userModel);
 
-    Flux<UserModel> getAllUser();
+    Flux<UserModel> findAllUsers();
 
-    Mono<Void> deleteUser(Long id);
+    Mono<Void> deleteUserById(Long id);
+
+    Mono<UserModel> findByDocumentNumber(String email);
 }
