@@ -22,6 +22,7 @@ public class ValidationHelper {
         validator.validate(userDto, errors);
 
         if (errors.hasErrors()) {
+
             throw new WebExchangeBindException(null, errors);
         }
     }
