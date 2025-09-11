@@ -3,7 +3,6 @@ apply plugin: 'org.springframework.boot'
 dependencies {
     implementation project(':r2dbc-postgresql')
     implementation 'org.reactivecommons.utils:object-mapper:0.1.0'
-    implementation project(':jpa-repository')
     implementation project(':reactive-web')
     implementation project(':model')
     implementation project(':usecase')
@@ -11,6 +10,8 @@ dependencies {
     runtimeOnly('org.springframework.boot:spring-boot-devtools')
     testImplementation 'com.tngtech.archunit:archunit:1.4.1'
     testImplementation 'com.fasterxml.jackson.core:jackson-databind'
+    implementation 'io.github.cdimascio:dotenv-java:3.0.0'
+
 }
 
 tasks.register('explodedJar', Copy) {

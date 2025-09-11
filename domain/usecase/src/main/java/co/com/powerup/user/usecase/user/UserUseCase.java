@@ -13,28 +13,36 @@ public class UserUseCase {
 
     private final UserRepository userRepository;
 
-    public Mono<UserModel> saveUser(UserModel userModel) {
-        return userRepository.saveUser(userModel);
+    public Mono<UserModel> createUser(UserModel userModel) {
+        return userRepository.createUser(userModel);
     }
 
-    public Mono<UserModel> getUserByEmail(String email) {
-        return userRepository.getUserByEmail(email);
+    public Mono<UserModel> findUserByEmail(String email) {
+        return userRepository.findUserByEmail(email);
     }
 
-    public Mono<UserModel> editUser(UserModel userModel, Long id) {
-        return userRepository.getUserById(id)
+    public Mono<UserModel> updateUser(UserModel userModel, Long id) {
+        return userRepository.findUserById(id)
                 .flatMap(user -> {
                     userModel.setId(user.getId());
-                    return userRepository.editUser(userModel);
+                    return userRepository.updateUser(userModel);
 
                 });
     }
 
-    public Flux<UserModel> getAllUser() {
-        return userRepository.getAllUser();
+    public Flux<UserModel> findAllUsers() {
+        return userRepository.findAllUsers();
     }
 
-    public Mono<Void> deleteUser(Long id) {
-        return userRepository.deleteUser(id);
+    public Mono<Void> deleteUserById(Long id) {
+        return userRepository.deleteUserById(id);
     }
+
+    public Mono<UserModel> findUserByDocumentNumber(String documentNumber) {
+
+        return userRepository.findByDocumentNumber(documentNumber);
+    }
+
+
+
 }

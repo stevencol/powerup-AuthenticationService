@@ -8,9 +8,9 @@ spring:
   devtools:
     add-properties: false
   r2dbc:
-    url: "r2dbc:mysql://localhost:3306/pg_user"
-    username: "root"
-    password: "1994"
+    url: "${BD_URL}"
+    username: "${BD_USER}"
+    password: "${BD_PASSWORD}"
 
 management:
   endpoints:
@@ -26,12 +26,15 @@ cors:
 
 springdoc:
   swagger-ui:
-    path: /swagger.html
+    path: /swagger
     enabled: true
   api-docs:
     enabled: true
-    path: /docs
+    path: /docsclear
   webflux:
     router:
       enabled: true
+  jwt:
+    auth:
+      secret: "${JWT_AUTH_SECRET}"
 

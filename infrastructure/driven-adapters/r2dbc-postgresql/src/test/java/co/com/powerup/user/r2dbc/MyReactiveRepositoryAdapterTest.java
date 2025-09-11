@@ -1,11 +1,11 @@
 package co.com.powerup.user.r2dbc;
 
 import co.com.powerup.user.model.user.UserModel;
-import co.com.powerup.user.model.user.exception.EntityNotFoundException;
 import co.com.powerup.user.r2dbc.mapper.UserModelMapper;
 import co.com.powerup.user.r2dbc.model.UserEntity;
 import co.com.powerup.user.r2dbc.repository.R2BDUserRepositoryAdapter;
 import co.com.powerup.user.r2dbc.repository.R2DBUserRepository;
+import exceptions.EntityNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -47,7 +47,7 @@ class MyReactiveRepositoryAdapterTest {
         when(userRepository.save(any(UserEntity.class)))
                 .thenReturn(Mono.just(entity));
 
-        StepVerifier.create(adapter.saveUser(model))
+        StepVerifier.create(adapter.createUser(model))
                 .expectNextMatches(saved -> saved.getEmail().equals("steven@email.com"))
                 .verifyComplete();
 
@@ -73,7 +73,7 @@ class MyReactiveRepositoryAdapterTest {
                 .thenAnswer(invocation -> Mono.just(invocation.getArgument(0)));
 
 
-        StepVerifier.create(adapter.editUser(update))
+        StepVerifier.create(adapter.updateUser(update))
                 .assertNext(updated -> {
                     Objects.requireNonNull(updated);
                     assert updated.getId().equals(1L);
@@ -100,7 +100,7 @@ class MyReactiveRepositoryAdapterTest {
         when(userRepository.findByEmail("steven@email.com"))
                 .thenReturn(Mono.just(userEntity));
 
-        StepVerifier.create(adapter.getUserByEmail("steven@email.com"))
+        StepVerifier.create(adapter.findUserByEmail("steven@email.com"))
                 .expectNextMatches(user -> user.getEmail().equals("steven@email.com"))
                 .verifyComplete();
     }
@@ -110,7 +110,7 @@ class MyReactiveRepositoryAdapterTest {
         UserEntity userEntity = userMapper.modelToEntity(buildModel());
         when(userRepository.findById(1L))
                 .thenReturn(Mono.just(userEntity));
-        StepVerifier.create(adapter.getUserById(1L))
+        StepVerifier.create(adapter.findUserById(1L))
                 .expectNextMatches(userModel -> userModel.getId().equals(1L))
                 .verifyComplete();
     }
@@ -120,7 +120,7 @@ class MyReactiveRepositoryAdapterTest {
 
         when(userRepository.findById(1L))
                 .thenReturn(Mono.empty());
-        StepVerifier.create(adapter.getUserById(1L))
+        StepVerifier.create(adapter.findUserById(1L))
                 .expectErrorMatches(EntityNotFoundException.class::isInstance)
                 .verify();
     }
@@ -132,7 +132,7 @@ class MyReactiveRepositoryAdapterTest {
         when(userRepository.findByEmail("steven@email.com"))
                 .thenReturn(Mono.empty());
 
-        StepVerifier.create(adapter.getUserByEmail("steven@email.com"))
+        StepVerifier.create(adapter.findUserByEmail("steven@email.com"))
                 .expectErrorMatches(EntityNotFoundException.class::isInstance)
                 .verify();
     }
@@ -143,7 +143,7 @@ class MyReactiveRepositoryAdapterTest {
         UserEntity entity = userMapper.modelToEntity(buildModel());
         when(userRepository.findAll()).thenReturn(Flux.just(entity));
 
-        StepVerifier.create(adapter.getAllUser())
+        StepVerifier.create(adapter.findAllUsers())
                 .expectNextCount(1)
                 .verifyComplete();
     }
@@ -155,7 +155,7 @@ class MyReactiveRepositoryAdapterTest {
         when(userRepository.findById(1L)).thenReturn(Mono.just(entity));
         when(userRepository.deleteById(1L)).thenReturn(Mono.empty());
 
-        StepVerifier.create(adapter.deleteUser(1L))
+        StepVerifier.create(adapter.deleteUserById(1L))
                 .verifyComplete();
 
         verify(userRepository).deleteById(1L);
@@ -165,7 +165,7 @@ class MyReactiveRepositoryAdapterTest {
     void deleteUserNotFound() {
         when(userRepository.findById(99L)).thenReturn(Mono.empty());
 
-        StepVerifier.create(adapter.deleteUser(99L))
+        StepVerifier.create(adapter.deleteUserById(99L))
                 .expectErrorMatches(EntityNotFoundException.class::isInstance)
                 .verify();
     }

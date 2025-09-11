@@ -1,4 +1,4 @@
-package co.com.powerup.user.r2dbc.exception;
+package exceptions;
 
 public class EntityNotFoundException extends RuntimeException {
 

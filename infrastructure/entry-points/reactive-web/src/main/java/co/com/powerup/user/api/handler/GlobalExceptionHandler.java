@@ -2,8 +2,10 @@ package co.com.powerup.user.api.handler;
 
 import co.com.powerup.user.api.dto.ApiResponseDto;
 import co.com.powerup.user.api.helper.ResponseHelper;
-import co.com.powerup.user.model.user.exception.EntityNotFoundException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import exceptions.EntityNotFoundException;
+import exceptions.InvalidTokenException;
+import exceptions.LoginAttemptException;
 import org.springframework.core.MethodParameter;
 import org.springframework.core.annotation.Order;
 import org.springframework.dao.DuplicateKeyException;
@@ -13,6 +15,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.bind.support.WebExchangeBindException;
 import org.springframework.web.server.*;
 import reactor.core.publisher.Mono;
+
 
 import java.util.Optional;
 
@@ -46,11 +49,11 @@ public class GlobalExceptionHandler implements WebExceptionHandler {
                         .orElse("Unknown");
 
 
-                body = new ApiResponseDto<>(inputEx.getReason(), param, status);
+                body = new ApiResponseDto<>(inputEx.getMessage(), param, status);
             }
             case EntityNotFoundException entityNotFoundEx -> {
-                status = HttpStatus.BAD_REQUEST;
-                body = new ApiResponseDto<>("RuntimeException", entityNotFoundEx.getMessage(), status);
+                status = HttpStatus.NOT_FOUND;
+                body = new ApiResponseDto<>("Not Found", entityNotFoundEx.getMessage(), status);
             }
             case MethodNotAllowedException methodEx -> {
                 status = HttpStatus.METHOD_NOT_ALLOWED;
@@ -65,8 +68,15 @@ public class GlobalExceptionHandler implements WebExceptionHandler {
                         "Ruta no encontrada",
                         status
                 );
+            }case InvalidTokenException invalidTokenEx -> {
+                status = HttpStatus.FORBIDDEN;
+                body = new ApiResponseDto<>("Token inválid", invalidTokenEx.getMessage(), status);
+            }case LoginAttemptException loginAttemptEx -> {
+                status = HttpStatus.FORBIDDEN;
+                body = new ApiResponseDto<>("Acceso denegado", loginAttemptEx.getMessage(), status);
             }
-            default -> body = new ApiResponseDto<>(ex.getMessage(), "Error no controlado", status);
+
+            default -> body = new ApiResponseDto<>(ex.getLocalizedMessage(), "Error no controlado", status);
 
         }
         response.setStatusCode(status);

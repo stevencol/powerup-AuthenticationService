@@ -4,112 +4,207 @@ import co.com.powerup.user.model.user.UserModel;
 import co.com.powerup.user.model.user.gateways.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
-import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.any;
-
 import java.math.BigDecimal;
-import java.time.LocalDate;
+
+import static org.mockito.Mockito.*;
+
 
 class UserCaseTest {
-
+    @Mock
     private UserRepository userRepository;
+
+    @InjectMocks
     private UserUseCase userUseCase;
+
 
     @BeforeEach
     void setUp() {
-        userRepository = Mockito.mock(UserRepository.class);
-        userUseCase = new UserUseCase(userRepository);
+        MockitoAnnotations.openMocks(this);
     }
 
     @Test
-    void saveUser() {
-        UserModel user = createUser();
+    void createUser_Success() {
 
-        when(userRepository.saveUser(any(UserModel.class))).thenReturn(Mono.just(user));
+        UserModel userModel = getUserModelTest();
 
-        StepVerifier.create(userUseCase.saveUser(user))
-                .expectNext(user)
+        when(userRepository.createUser(any(UserModel.class))).thenReturn(Mono.just(userModel));
+
+        StepVerifier.create(userUseCase.createUser(userModel))
+                .expectNext(userModel)
                 .verifyComplete();
 
-        verify(userRepository).saveUser(user);
+        verify(userRepository).createUser(any(UserModel.class));
     }
 
-    @Test
-    void getUserByEmail() {
-        UserModel user = createUser();
 
-        when(userRepository.getUserByEmail("test@email.com"))
-                .thenReturn(Mono.just(user));
+    private static UserModel getUserModelTest() {
+        UserModel userModel = new UserModel();
+        userModel.setFirstName("Steven");
+        userModel.setMiddleName("Andres");
+        userModel.setLastName("Gomez");
+        userModel.setSecondLastName("Lopez");
+        userModel.setEmail("steven@mail.com");
+        userModel.setAddress("Cra 7 # 45-67");
+        userModel.setPhoneNumber("3216549870");
+        userModel.setBaseSalary(new BigDecimal("1500.00"));
+        return userModel;
 
-        StepVerifier.create(userUseCase.getUserByEmail("test@email.com"))
-                .expectNext(user)
-                .verifyComplete();
-
-        verify(userRepository).getUserByEmail("test@email.com");
-    }
-
-    @Test
-    void editUser() {
-        UserModel existing = createUser();
-        existing.setFirstName("Calos");
-
-        UserModel update = createUser();
-        update.setFirstName("Michael");
-
-        when(userRepository.getUserById(1L)).thenReturn(Mono.just(existing));
-        when(userRepository.editUser(any(UserModel.class)))
-                .thenAnswer(invocation -> Mono.just(invocation.getArgument(0)));
-
-        StepVerifier.create(userUseCase.editUser(update, 1L))
-                .assertNext(updated -> {
-                    assert updated.getFirstName().equals("Michael");
-                })
-                .verifyComplete();
-
-        verify(userRepository).getUserById(1L);
-        verify(userRepository).editUser(any(UserModel.class));
     }
 
 
     @Test
-    void getAllUser() {
-        when(userRepository.getAllUser())
-                .thenReturn(Flux.just(createUser(), createUser()));
+    void find_By_Email() {
 
-        StepVerifier.create(userUseCase.getAllUser())
-                .expectNextCount(2)
+
+        UserModel userModel = getUserModelTest();
+        when(userRepository.findUserByEmail(any(String.class)))
+                .thenReturn(Mono.just(userModel));
+
+        StepVerifier
+                .create(userUseCase.findUserByEmail("steven@mail.com"))
+                .expectNextMatches(user -> user.getEmail().equals("steven@mail.com"))
                 .verifyComplete();
 
-        verify(userRepository).getAllUser();
+        verify(userRepository).findUserByEmail(any(String.class));
     }
 
     @Test
-    void deleteUser() {
-        when(userRepository.deleteUser(1L)).thenReturn(Mono.empty());
+    void find_By_Email_Not_Found() {
 
-        StepVerifier.create(userUseCase.deleteUser(1L))
+
+        when(userRepository.findUserByEmail(any(String.class)))
+                .thenReturn(Mono.empty());
+
+        StepVerifier
+                .create(userUseCase.findUserByEmail("steven@mail.com"))
                 .verifyComplete();
 
-        verify(userRepository).deleteUser(1L);
+        verify(userRepository).findUserByEmail(any(String.class));
     }
 
-    private UserModel createUser() {
-        UserModel user = new UserModel();
-        user.setId(1L);
-        user.setFirstName("Steven");
-        user.setLastName("Palacio");
-        user.setEmail("steven@email.com");
-        user.setBaseSalary(new BigDecimal("1000.0"));
-        user.setAddress("Calle falsa 123");
-        user.setBirthDate(LocalDate.of(1994, 5, 24));
-        user.setPhoneNumber("3016130000");
-        return user;
+    @Test
+    void find_All_Users() {
+
+        UserModel userModel = getUserModelTest();
+        UserModel userModel2 = getUserModelTest();
+
+        when(userRepository.findAllUsers())
+                .thenReturn(Flux.just(userModel, userModel2));
+
+        StepVerifier
+                .create(userUseCase.findAllUsers())
+                .expectNext(userModel)
+                .expectNext(userModel2)
+                .verifyComplete();
+
+        verify(userRepository).findAllUsers();
     }
 
+    @Test
+    void delete_User_By_Id() {
+        Long userId = 1L;
+
+        when(userRepository.deleteUserById(userId)).thenReturn(Mono.empty());
+
+
+        StepVerifier.create(userUseCase.deleteUserById(userId))
+                .verifyComplete();
+
+        verify(userRepository).deleteUserById(userId);
+    }
+
+
+    @Test
+    void update_User_Success() {
+        Long userId = 1L;
+
+
+        UserModel existingUser = getUserModelTest();
+        existingUser.setId(userId);
+
+        UserModel updatedData = getUserModelTest();
+        updatedData.setFirstName("Carlos");
+
+        UserModel savedUser = getUserModelTest();
+        savedUser.setId(userId);
+        savedUser.setFirstName("Carlos");
+
+
+        when(userRepository.findUserById(userId))
+                .thenReturn(Mono.just(existingUser));
+
+
+        when(userRepository.updateUser(any(UserModel.class)))
+                .thenReturn(Mono.just(savedUser));
+
+        StepVerifier.create(userUseCase.updateUser(updatedData, userId))
+                .expectNext(savedUser)
+                .verifyComplete();
+
+        verify(userRepository).findUserById(userId);
+        verify(userRepository).updateUser(argThat(u ->
+                u.getId().equals(userId) && u.getFirstName().equals("Carlos")
+        ));
+    }
+
+    @Test
+    void updateUser_UserNotFound() {
+        Long userId = 1L;
+        UserModel updatedData = getUserModelTest();
+        updatedData.setFirstName("Carlos");
+
+        when(userRepository.findUserById(userId)).thenReturn(Mono.empty());
+
+        StepVerifier.create(userUseCase.updateUser(updatedData, userId))
+                .verifyComplete();
+
+        verify(userRepository).findUserById(userId);
+    }
+
+    @Test
+    void createUser_Error() {
+        UserModel userModel = getUserModelTest();
+
+        when(userRepository.createUser(any(UserModel.class)))
+                .thenReturn(Mono.error(new RuntimeException("Error en la creación del usuario")));
+
+        StepVerifier.create(userUseCase.createUser(userModel))
+                .expectError(RuntimeException.class)
+                .verify();
+
+        verify(userRepository).createUser(any(UserModel.class));
+    }
+
+    @Test
+    void findUserByDocumentNumber_Success() {
+        String documentNumber = "123456789";
+        UserModel userModel = getUserModelTest();
+        when(userRepository.findByDocumentNumber(documentNumber))
+                .thenReturn(Mono.just(userModel));
+
+        StepVerifier.create(userUseCase.findUserByDocumentNumber(documentNumber))
+                .expectNext(userModel)
+                .verifyComplete();
+
+        verify(userRepository).findByDocumentNumber(documentNumber);
+    }
+
+    @Test
+    void findUserByDocumentNumber_NotFound() {
+        String documentNumber = "123456789";
+
+        when(userRepository.findByDocumentNumber(documentNumber))
+                .thenReturn(Mono.empty());
+
+        StepVerifier.create(userUseCase.findUserByDocumentNumber(documentNumber))
+                .verifyComplete();
+        verify(userRepository).findByDocumentNumber(documentNumber);
+    }
 }
