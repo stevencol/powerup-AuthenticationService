@@ -32,4 +32,13 @@ public record ApiResponseDto<T>(T data,
         this(null, status, message, error, null, null, null);
     }
 
+    public ApiResponseDto(HttpStatus status, String token, String message) {
+        this(null, status, message, null, null, token, null);
+    }
+
+
+    public ApiResponseDto(T data, String message, HttpStatus status, PageDto page) {
+        this(data, status, message, null, null, null, page);
+    }
+
 }
