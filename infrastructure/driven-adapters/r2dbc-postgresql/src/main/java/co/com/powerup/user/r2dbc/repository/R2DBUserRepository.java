@@ -11,4 +11,6 @@ import reactor.core.publisher.Mono;
 public interface R2DBUserRepository extends ReactiveCrudRepository<UserEntity, Long> {
     Mono<UserEntity> findByEmail(String username);
 
+    Mono<UserEntity> findByDocumentNumber(String documentNumber);
+
 }
