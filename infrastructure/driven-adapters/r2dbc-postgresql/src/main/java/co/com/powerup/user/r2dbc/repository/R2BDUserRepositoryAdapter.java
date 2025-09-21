@@ -62,6 +62,12 @@ public class R2BDUserRepositoryAdapter implements UserRepository {
                 .map(userMapper::entityToModel);
     }
 
+    @Override
+    public Flux<UserModel> findByRolId(Long rolId) {
+        return userRepository.findByRolId(rolId)
+                .map(userMapper::entityToModel);
+    }
+
     @Transactional(rollbackFor = Exception.class)
     @Override
     public Mono<Void> deleteUserById(Long id) {

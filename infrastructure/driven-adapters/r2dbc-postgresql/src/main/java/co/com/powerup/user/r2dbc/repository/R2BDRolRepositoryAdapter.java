@@ -34,6 +34,13 @@ public class R2BDRolRepositoryAdapter implements RoleRepository {
     }
 
     @Override
+    public Mono<RoleModel> findRoleByName(String name) {
+        return rolRepository.findByName(name)
+                .switchIfEmpty(Mono.error(new EntityNotFoundException(MSG_NOT_FOUND)))
+                .map(roleMapper::toModel);
+    }
+
+    @Override
     public Mono<RoleModel> updateRole(UserModel userModel) {
         return null;
     }

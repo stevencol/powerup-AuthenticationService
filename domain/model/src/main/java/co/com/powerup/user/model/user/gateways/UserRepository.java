@@ -15,6 +15,7 @@ public interface UserRepository {
     Mono<UserModel> updateUser(UserModel userModel);
 
     Flux<UserModel> findAllUsers();
+    Flux<UserModel> findByRolId(Long rolId);
 
     Mono<Void> deleteUserById(Long id);
 

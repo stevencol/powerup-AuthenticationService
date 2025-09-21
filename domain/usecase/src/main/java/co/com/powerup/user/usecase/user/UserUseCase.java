@@ -1,10 +1,13 @@
 package co.com.powerup.user.usecase.user;
 
 import co.com.powerup.user.model.user.UserModel;
+import co.com.powerup.user.model.user.gateways.RoleRepository;
 import co.com.powerup.user.model.user.gateways.UserRepository;
 import lombok.AllArgsConstructor;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+
+import java.util.List;
 
 
 @AllArgsConstructor
@@ -12,9 +15,17 @@ public class UserUseCase {
 
 
     private final UserRepository userRepository;
+    private final RoleUseCase roleUseCase;
+
 
     public Mono<UserModel> createUser(UserModel userModel) {
-        return userRepository.createUser(userModel);
+
+        return roleUseCase.findRoleByName("client")
+                .flatMap(role -> {
+                    userModel.setRolId(role.getId());
+                    return userRepository.createUser(userModel);
+                });
+
     }
 
     public Mono<UserModel> findUserByEmail(String email) {
@@ -30,6 +41,13 @@ public class UserUseCase {
                 });
     }
 
+
+    public Mono<List<UserModel>> findUserAdmins() {
+        return roleUseCase.findRoleByName("admin")
+                .flatMapMany(role -> userRepository.findByRolId(role.getId()))
+                .collectList();
+    }
+
     public Flux<UserModel> findAllUsers() {
         return userRepository.findAllUsers();
     }
@@ -42,7 +60,6 @@ public class UserUseCase {
 
         return userRepository.findByDocumentNumber(documentNumber);
     }
-
 
 
 }

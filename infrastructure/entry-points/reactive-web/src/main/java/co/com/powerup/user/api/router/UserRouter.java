@@ -25,7 +25,9 @@ public class UserRouter {
                 .andRoute(PATCH("/users/{id}").and(RequestPredicates.contentType(MediaType.APPLICATION_JSON)), handler::editUser)
                 .andRoute(DELETE("/users/{id}"), handler::deleteUser)
                 .andRoute(GET("/users/document"), handler::findMyUserByDocumentNumber)
-                .andRoute(GET("/users/document/{documentNumber}"), handler::findUserByDocumentNumber);
+                .andRoute(GET("/users/document/{documentNumber}"), handler::findUserByDocumentNumber)
+                .andRoute(GET("/users/admins"), handler::findUsersAdmins);
+
 
     }
 }
