@@ -10,6 +10,8 @@ public interface RoleRepository {
 
     Mono<RoleModel> findRoleById(Long id);
 
+    Mono<RoleModel> findRoleByName(String name);
+
     Mono<RoleModel> updateRole(UserModel userModel);
 
     Mono<Void> deleteRoleById(Long id);

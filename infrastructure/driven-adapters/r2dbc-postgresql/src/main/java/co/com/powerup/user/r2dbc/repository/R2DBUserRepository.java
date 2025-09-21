@@ -4,6 +4,7 @@ package co.com.powerup.user.r2dbc.repository;
 import co.com.powerup.user.r2dbc.model.UserEntity;
 import org.springframework.data.repository.reactive.ReactiveCrudRepository;
 import org.springframework.stereotype.Repository;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 
@@ -12,5 +13,7 @@ public interface R2DBUserRepository extends ReactiveCrudRepository<UserEntity, L
     Mono<UserEntity> findByEmail(String username);
 
     Mono<UserEntity> findByDocumentNumber(String documentNumber);
+
+    Flux<UserEntity> findByRolId(Long rolId);
 
 }

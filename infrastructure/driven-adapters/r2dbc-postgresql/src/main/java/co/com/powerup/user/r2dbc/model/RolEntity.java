@@ -13,11 +13,11 @@ import org.springframework.data.relational.core.mapping.Table;
 @NoArgsConstructor
 public class RolEntity {
     @Id
+    @Column("id")
     private Long id;
     @Column("name")
     private String name;
     @Column("description")
     private String description;
-    @Column("id_rol")
-    private Long idRol;
+
 }

@@ -15,4 +15,8 @@ public class RoleUseCase {
     public Mono<RoleModel> findRoleById(Long id) {
         return roleRepository.findRoleById(id);
     }
+
+    public Mono<RoleModel> findRoleByName(String name) {
+        return roleRepository.findRoleByName(name);
+    }
 }

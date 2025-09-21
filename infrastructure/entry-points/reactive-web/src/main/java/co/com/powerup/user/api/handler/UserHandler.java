@@ -19,6 +19,8 @@ import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Mono;
 
+import java.util.stream.Collectors;
+
 import static constants.MessagesInfo.*;
 
 import static co.com.powerup.user.api.helper.ResponseHelper.responseHelper;
@@ -46,6 +48,7 @@ public class UserHandler {
                             .flatMap(userModel -> {
                                 log.info("User recibido {}", userDto.toString());
                                 log.info("User guardado {}", userModel.toString());
+                                userModel.setPassword(null);
                                 UserDto userDtoResponse = userMapper.modelToDto(userModel);
                                 return responseHelper(new ApiResponseDto<UserDto>(userDtoResponse, "User created successfully", HttpStatus.CREATED));
                             });
@@ -102,7 +105,7 @@ public class UserHandler {
     }
 
 
-    @PreAuthorize("hasAnyAuthority('admin', 'client')")
+    @PreAuthorize("hasAnyAuthority('admin', 'client','system')")
     public Mono<ServerResponse> findMyUserByDocumentNumber(ServerRequest request) {
 
         return ReactiveSecurityContextHolder.getContext().
@@ -119,7 +122,7 @@ public class UserHandler {
 
     }
 
-    @PreAuthorize("hasAnyAuthority('admin', 'client')")
+    @PreAuthorize("hasAnyAuthority('admin', 'client','system')")
     public Mono<ServerResponse> findUserByDocumentNumber(ServerRequest request) {
         String documentNumber = request.pathVariable("documentNumber");
 
@@ -130,5 +133,21 @@ public class UserHandler {
                             return responseHelper(new ApiResponseDto<>(userDtoResponse, MSG_OPERATION_SUCCESS, HttpStatus.OK));
                         }
                 );
+    }
+
+    @PreAuthorize("hasAnyAuthority('system')")
+    public Mono<ServerResponse> findUsersAdmins(ServerRequest request) {
+        return userUseCase.findUserAdmins()
+                .map(usersAdmins ->
+                        usersAdmins.stream().map(usersModel -> {
+                            usersModel.setPassword(null);
+                            return userMapper.modelToDto(usersModel);
+                        }).toList()
+                )
+                .flatMap(users ->
+                        responseHelper(new ApiResponseDto<>(users, MSG_OPERATION_SUCCESS, HttpStatus.OK))
+                );
+
+
     }
 }
